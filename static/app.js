@@ -46,6 +46,7 @@ function renderProducts() {
     const sale = discount(product);
     const image = productImageUrl(product);
     const stockText = product.stock === null ? "재고 충분" : `재고 ${product.stock}개`;
+    const soldOut = product.stock !== null && Number(product.stock) <= 0;
     return `
       <article class="product-card">
         <div class="product-image">
@@ -58,7 +59,7 @@ function renderProducts() {
           <strong class="price">${money(product.price)}</strong>
           ${product.original_price > product.price ? `<span class="original-price">${money(product.original_price)}</span>` : ""}
         </div>
-        <button class="pixel-button full" type="button" onclick="addToCart(${product.id})">담기</button>
+        <button class="pixel-button full" type="button" onclick="addToCart(${product.id})" ${soldOut ? "disabled" : ""}>${soldOut ? "품절" : "담기"}</button>
       </article>
     `;
   }).join("") || `<p>등록된 상품이 없습니다.</p>`;
@@ -107,14 +108,26 @@ function closeCart() {
 }
 
 function addToCart(id) {
-  cart.set(Number(id), (cart.get(Number(id)) || 0) + 1);
+  const product = productById(id);
+  if (!product) return;
+  const nextQuantity = (cart.get(Number(id)) || 0) + 1;
+  if (product.stock !== null && nextQuantity > Number(product.stock)) {
+    $("cartMessage").textContent = "한정수량을 초과해서 담을 수 없습니다.";
+    openCart();
+    return;
+  }
+  cart.set(Number(id), nextQuantity);
   $("cartMessage").textContent = "";
   renderCart();
   openCart();
 }
 
 function setCartQuantity(id, value) {
-  const quantity = Math.max(0, Number(value || 0));
+  const product = productById(id);
+  let quantity = Math.max(0, Number(value || 0));
+  if (product && product.stock !== null) {
+    quantity = Math.min(quantity, Number(product.stock));
+  }
   if (quantity === 0) cart.delete(Number(id));
   else cart.set(Number(id), quantity);
   renderCart();
