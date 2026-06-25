@@ -703,12 +703,18 @@ th { background: #fff3a6; }
   .shop-main { padding: 22px 12px 46px; }
   .promo-panel {
     min-height: 330px;
-    padding: 24px;
+    padding: 24px 24px 118px;
     margin-bottom: 30px;
   }
   .promo-card { padding: 26px 18px; }
   .promo-star { right: 22px; font-size: 52px; }
-  .promo-mascot { opacity: .28; right: 18px; }
+  .promo-mascot {
+    opacity: 1;
+    right: 24px;
+    bottom: 10px;
+    width: 96px;
+    z-index: 3;
+  }
   .section-bar { margin-bottom: 20px; }
   .product-grid { gap: 20px; }
   .admin-header, .admin-layout, .form-grid { grid-template-columns: 1fr; }
