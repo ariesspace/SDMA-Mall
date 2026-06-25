@@ -212,25 +212,19 @@ button { cursor: pointer; }
   box-shadow: 4px 4px 0 #000;
 }
 
-.bag-icon {
+.cart-icon {
   display: block;
-  width: 22px;
-  height: 22px;
-  margin: 4px auto 0;
-  border: 3px solid #000;
-  border-top: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0 auto;
 }
 
-.bag-icon::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 9px;
-  width: 14px;
-  height: 10px;
-  border: 3px solid #000;
-  border-bottom: 0;
-  transform: translateX(-50%);
+.cart-icon path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2.8;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
 }
 
 .cart-button b {
