@@ -395,6 +395,19 @@ mark {
   box-shadow: 2px 2px 0 #000;
 }
 
+.sold-out-badge {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .72);
+  color: #000;
+  font-size: clamp(34px, 8vw, 56px);
+  text-shadow: 3px 3px 0 var(--red);
+  border: 6px solid var(--red);
+}
+
 .product-card h3 {
   min-height: 48px;
   margin: 18px 0 10px;

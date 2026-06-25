@@ -51,6 +51,7 @@ function renderProducts() {
       <article class="product-card">
         <div class="product-image">
           ${sale ? `<span class="discount">-5%</span>` : ""}
+          ${soldOut ? `<span class="sold-out-badge">품절</span>` : ""}
           <img src="${image}" alt="${product.name}">
         </div>
         <h3>${product.name}</h3>
