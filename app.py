@@ -9,7 +9,7 @@ from datetime import datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
 
 ROOT = Path(__file__).resolve().parent
@@ -18,6 +18,18 @@ ADMIN_CODE = os.getenv("SDMA_MALL_ADMIN_CODE", os.getenv("RNP_MALL_ADMIN_TOKEN",
 DB_PATH = Path(os.getenv("SDMA_MALL_DB", os.getenv("RNP_MALL_DB", str(ROOT / "data" / "sdma-mall.sqlite3"))))
 HOST = os.getenv("SDMA_MALL_HOST", "0.0.0.0")
 PORT = int(os.getenv("SDMA_MALL_PORT", os.getenv("RNP_MALL_PORT", "8090")))
+
+DEFAULT_PRODUCTS = [
+    ("인사생략 1일", "하루 동안 인사를 생략할 수 있는 권리", 9, 10, None, ""),
+    ("관등생략 1일", "하루 동안 관등성명을 생략할 수 있는 권리", 9, 10, None, ""),
+    ("반차", "하루에 한 번만 출석하여도 되는 반차권", 9, 10, None, ""),
+    ("연차 1회", "원하는 날 사용할 수 있는 연차권 1회", 14, 15, None, ""),
+    ("타 인원 임관 변경권 24시간", "다른 인원의 임관 상태를 24시간 변경", 14, 15, None, ""),
+    ("직속 1회 체험권 24시간", "직속 1회를 24시간 체험", 19, 20, None, ""),
+    ("타 인원 기수 변경권 24시간", "다른 인원의 기수를 24시간 변경", 28, 30, None, ""),
+    ("기수 체험권 24시간", "본인에게 적용되는 기수 체험권", 28, 30, None, ""),
+    ("무지개반사", "무지개반사 1회 사용권", 38, 40, None, "static/rainbow.png"),
+]
 
 
 def now_text() -> str:
@@ -86,20 +98,18 @@ def init_db() -> None:
         )
         count = db.execute("SELECT COUNT(*) AS count FROM products").fetchone()["count"]
         if count == 0:
-            seed_products = [
-                ("반중력 오피스 체어 Mk.II", "허리와 마음을 동시에 띄워주는 근무용 의자", 3200, 4500, 8, "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=800&q=80"),
-                ("초공간 노이즈 캔슬링 헤드셋", "회의 소음과 우주 먼지를 함께 차단", 2890, 3500, 12, "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80"),
-                ("홀로그램 디스플레이 27인치", "보고서도 SF처럼 보이는 업무 화면", 4500, 5200, 5, "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=800&q=80"),
-                ("레트로 기계식 키보드", "타건감으로 행성 궤도를 맞추는 키보드", 1250, 1500, 20, "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80"),
-            ]
-            db.executemany(
-                """
-                INSERT INTO products
-                    (name, description, price, original_price, stock, image_url, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                [(*item, timestamp, timestamp) for item in seed_products],
-            )
+            seed_default_products(db, timestamp)
+
+
+def seed_default_products(db: sqlite3.Connection, timestamp: str) -> None:
+    db.executemany(
+        """
+        INSERT INTO products
+            (name, description, price, original_price, stock, image_url, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        [(*item, timestamp, timestamp) for item in DEFAULT_PRODUCTS],
+    )
 
 
 def render_template(name: str) -> bytes:
@@ -245,7 +255,7 @@ def checkout(payload: dict) -> dict:
             order_items.append((product, quantity))
 
         if total > user["points"]:
-            return {"ok": False, "message": f"보유 포인트가 부족합니다. 보유 {user['points']:,}P / 필요 {total:,}P"}
+            return {"ok": False, "message": f"보유 점수가 부족합니다. 보유 {user['points']:,}점 / 필요 {total:,}점"}
 
         cursor = db.execute(
             "INSERT INTO orders (user_id, total_points, created_at) VALUES (?, ?, ?)",
@@ -303,7 +313,7 @@ def build_receipts() -> dict:
         order_items = item_map.get(order["id"], [])
         label = f"{order['team']} {order['employee_no']} {order['name']}".strip()
         summary = ", ".join(f"{item['product_name']} {item['quantity']}개" for item in order_items)
-        lines.append(f"[{order['created_at']}] {label} - {summary} / 총 {order['total_points']:,}P")
+        lines.append(f"[{order['created_at']}] {label} - {summary} / 총 {order['total_points']:,}점")
         receipt_list.append({"order": order_dict, "items": order_items})
     return {"list": receipt_list, "text": "\n".join(lines)}
 

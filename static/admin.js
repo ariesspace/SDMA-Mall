@@ -1,6 +1,6 @@
 const base = document.body.dataset.basePath;
 const $ = (id) => document.getElementById(id);
-const money = (value) => `${Number(value || 0).toLocaleString()} P`;
+const money = (value) => `${Number(value || 0).toLocaleString()}점`;
 let state = { users: [], products: [], receipts: { text: "", list: [] } };
 
 function adminCode() {

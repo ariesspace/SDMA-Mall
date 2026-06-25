@@ -5,7 +5,7 @@ let cart = new Map();
 let alienTapCount = 0;
 
 const $ = (id) => document.getElementById(id);
-const money = (value) => `${Number(value || 0).toLocaleString()} P`;
+const money = (value) => `${Number(value || 0).toLocaleString()}점`;
 
 async function api(path, options = {}) {
   const response = await fetch(base + path, {
@@ -30,16 +30,26 @@ function discount(product) {
   return Math.round((1 - product.price / product.original_price) * 100);
 }
 
+function productImageUrl(product) {
+  if (!product.image_url) {
+    return "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80";
+  }
+  if (product.image_url.startsWith("static/")) {
+    return `${base}/${product.image_url}`;
+  }
+  return product.image_url;
+}
+
 function renderProducts() {
   $("productCount").textContent = state.products.length;
   $("products").innerHTML = state.products.map((product) => {
     const sale = discount(product);
-    const image = product.image_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80";
+    const image = productImageUrl(product);
     const stockText = product.stock === null ? "재고 충분" : `재고 ${product.stock}개`;
     return `
       <article class="product-card">
         <div class="product-image">
-          ${sale ? `<span class="discount">-${sale}%</span>` : ""}
+          ${sale ? `<span class="discount">-5%</span>` : ""}
           <img src="${image}" alt="${product.name}">
         </div>
         <h3>${product.name}</h3>
@@ -65,20 +75,42 @@ function renderCart() {
     return `
       <div class="cart-line">
         <strong>${product.name}</strong>
-        <p>${money(product.price)} × <input type="number" min="0" value="${quantity}" onchange="setCartQuantity(${id}, this.value)"></p>
-        <b>${money(product.price * quantity)}</b>
+        <div class="cart-line-row">
+          <span>${money(product.price)}</span>
+          <input type="number" min="0" value="${quantity}" onchange="setCartQuantity(${id}, this.value)">
+          <b>${money(product.price * quantity)}</b>
+        </div>
       </div>
     `;
   }).join("");
   $("cartCount").textContent = count;
-  $("cartItems").innerHTML = lines || `<p>장바구니가 비어 있습니다.</p>`;
+  $("cartCountHeader").textContent = count;
+  $("cartItems").innerHTML = lines || `
+    <div class="empty-cart">
+      <div>
+        <p style="font-size:44px; margin:0 0 14px;">□</p>
+        <p>장바구니가 비어 있습니다.</p>
+      </div>
+    </div>
+  `;
   $("cartTotal").textContent = money(total);
+}
+
+function openCart() {
+  $("cartOverlay").classList.remove("hidden");
+  $("cartDrawer").classList.add("open");
+}
+
+function closeCart() {
+  $("cartDrawer").classList.remove("open");
+  $("cartOverlay").classList.add("hidden");
 }
 
 function addToCart(id) {
   cart.set(Number(id), (cart.get(Number(id)) || 0) + 1);
+  $("cartMessage").textContent = "";
   renderCart();
-  $("cartDrawer").classList.remove("hidden");
+  openCart();
 }
 
 function setCartQuantity(id, value) {
@@ -105,7 +137,7 @@ async function login() {
   $("loginDialog").close();
   $("intro").classList.add("hidden");
   $("mall").classList.remove("hidden");
-  $("userChip").textContent = `${currentUser.team || "SDMA"} ${currentUser.name || currentUser.employee_no} / ${money(currentUser.points)}`;
+  $("userChip").textContent = `${currentUser.team || "SDMA"} ${currentUser.name || currentUser.employee_no}님 / ${money(currentUser.points)}`;
   window.scrollTo(0, 0);
 }
 
@@ -113,7 +145,7 @@ function formatReceipt(receipt) {
   const order = receipt.order;
   const lines = receipt.items.map((item) => {
     const subtotal = item.unit_price * item.quantity;
-    return `${item.quantity}x ${item.product_name.padEnd(18, " ")} ${money(subtotal)}`;
+    return `${String(item.quantity).padStart(2, " ")}x ${item.product_name.padEnd(18, " ")} ${money(subtotal)}`;
   });
   return [
     "[ 영 수 증 ]",
@@ -141,11 +173,11 @@ async function checkout() {
   }
   state = result.state;
   currentUser.points -= result.receipt.order.total_points;
-  $("userChip").textContent = `${currentUser.team || "SDMA"} ${currentUser.name || currentUser.employee_no} / ${money(currentUser.points)}`;
+  $("userChip").textContent = `${currentUser.team || "SDMA"} ${currentUser.name || currentUser.employee_no}님 / ${money(currentUser.points)}`;
   cart = new Map();
   renderProducts();
   renderCart();
-  $("cartDrawer").classList.add("hidden");
+  closeCart();
   $("receiptText").textContent = formatReceipt(result.receipt);
   $("receiptDialog").showModal();
 }
@@ -180,8 +212,9 @@ document.addEventListener("DOMContentLoaded", () => {
   $("adminCodeInput").addEventListener("keydown", (event) => {
     if (event.key === "Enter") openAdmin();
   });
-  $("cartToggle").addEventListener("click", () => $("cartDrawer").classList.toggle("hidden"));
-  $("closeCart").addEventListener("click", () => $("cartDrawer").classList.add("hidden"));
+  $("cartToggle").addEventListener("click", openCart);
+  $("cartOverlay").addEventListener("click", closeCart);
+  $("closeCart").addEventListener("click", closeCart);
   $("checkoutButton").addEventListener("click", checkout);
   $("copyReceipt").addEventListener("click", () => navigator.clipboard.writeText($("receiptText").textContent));
   $("continueShopping").addEventListener("click", () => $("receiptDialog").close());

@@ -12,49 +12,78 @@
     <div class="rainbow"></div>
     <div class="intro-center">
       <h1>&lt; 우주 쇼핑몰 &gt;</h1>
-      <button id="openLogin" class="pixel-button yellow" type="button">&gt;&gt;나는 물건을 본다</button>
+      <button id="openLogin" class="pixel-button yellow intro-cta" type="button">&gt;&gt;나는 물건을 본다</button>
       <p class="blink">놀랍다 가격 !</p>
     </div>
     <button id="alienButton" class="alien-button" type="button" aria-label="관리자 입구">🛸</button>
     <p class="intro-caption">{ 어쨌든 재단장 기념 할인 행사 중이라는 거지 }</p>
   </section>
 
-  <main id="mall" class="mall hidden">
-    <header class="shop-header">
-      <div class="brand-lock">A</div>
-      <div class="brand-text">SDMA<span>SPACE</span></div>
-      <div class="staff-badge">임직원 전용</div>
+  <div id="mall" class="mall hidden">
+    <nav class="shop-header">
+      <button class="brand-area" type="button" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <span class="brand-lock">S</span>
+        <span class="brand-text">SDMA<span>SPACE</span></span>
+        <span class="staff-badge">임직원 전용</span>
+      </button>
+      <div class="header-spacer"></div>
       <div class="user-chip" id="userChip"></div>
-      <button id="cartToggle" class="cart-button" type="button" aria-label="장바구니">▣<b id="cartCount">0</b></button>
-    </header>
+      <button id="cartToggle" class="cart-button" type="button" aria-label="장바구니 열기">
+        <span class="bag-icon"></span>
+        <b id="cartCount">0</b>
+      </button>
+    </nav>
 
-    <section class="promo-panel">
-      <div class="promo-card">
-        <h2>&lt; 우주 임직원 포인트몰 개장&gt;</h2>
-        <p>외계에서 온 멋진 물건들! 복지포인트로 <mark>100% 결제</mark> 가능</p>
-        <button class="pixel-button black" type="button" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">&gt;&gt;&gt; 기획전 보러가기</button>
-      </div>
-      <div class="promo-star">☆</div>
-    </section>
+    <main class="shop-main">
+      <section class="promo-panel">
+        <div class="space-speck speck-one">✦</div>
+        <div class="space-speck speck-two">◆</div>
+        <div class="space-speck speck-three">✹</div>
+        <div class="promo-star">☆</div>
+        <div class="promo-mascot" aria-hidden="true">
+          <svg viewBox="0 0 100 100" role="img">
+            <path d="M27 73 L22 92 L31 84 L39 92 L37 72 Z" fill="#fff" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M66 72 L61 92 L70 84 L78 92 L75 73 Z" fill="#fff" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M24 26 Q14 7 36 15 Q50 10 64 15 Q86 7 76 26 Q91 42 85 62 Q75 82 50 82 Q25 82 15 62 Q9 42 24 26 Z" fill="#fff" stroke="#000" stroke-width="3"/>
+            <ellipse cx="33" cy="43" rx="13" ry="17" fill="#e4202b" stroke="#000" stroke-width="3"/>
+            <ellipse cx="67" cy="43" rx="13" ry="17" fill="#e4202b" stroke="#000" stroke-width="3"/>
+            <rect x="31" y="36" width="4" height="13" rx="2" fill="#000"/>
+            <rect x="65" y="36" width="4" height="13" rx="2" fill="#000"/>
+            <path d="M44 61 Q50 66 56 61" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round"/>
+            <path d="M48 73 H53 L57 86 L50 91 L43 86 Z" fill="#000"/>
+          </svg>
+        </div>
 
-    <section class="section-bar">
-      <h2>추천 보급품</h2>
-      <p>총 <b id="productCount">0</b>개</p>
-    </section>
-    <section id="products" class="product-grid"></section>
-  </main>
+        <div class="promo-card">
+          <h2><span>&lt;</span>우주 임직원 점수몰 개장<span>&gt;</span></h2>
+          <p>
+            외계에서 온 멋진 물건들! 보유 점수로 <mark>100% 결제</mark> 가능<br>
+            직장이 지루한가요? &gt;&gt; 클릭! 더 강해지고 싶나요? &gt;&gt; 클릭!
+          </p>
+          <button class="pixel-button black" type="button" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">&gt;&gt;&gt; 기획전 보러가기</button>
+        </div>
+      </section>
 
-  <aside id="cartDrawer" class="cart-drawer hidden">
+      <section class="section-bar">
+        <h2>추천 보급품</h2>
+        <p>총 <b id="productCount">0</b>개</p>
+      </section>
+      <section id="products" class="product-grid"></section>
+    </main>
+  </div>
+
+  <div id="cartOverlay" class="cart-overlay hidden"></div>
+  <aside id="cartDrawer" class="cart-drawer">
     <div class="drawer-head">
-      <h2>장바구니</h2>
-      <button class="icon-button" type="button" id="closeCart">×</button>
+      <h2>장바구니 <span id="cartCountHeader">0</span></h2>
+      <button class="icon-button" type="button" id="closeCart" aria-label="장바구니 닫기">×</button>
     </div>
     <div id="cartItems" class="cart-items"></div>
     <div class="cart-total">
-      <span>총 합계</span>
-      <strong id="cartTotal">0 P</strong>
+      <span>총 필요 점수</span>
+      <strong id="cartTotal">0점</strong>
     </div>
-    <button id="checkoutButton" class="pixel-button black full" type="button">결제하기</button>
+    <button id="checkoutButton" class="pixel-button purple full" type="button">결제하기 &gt;</button>
     <p id="cartMessage" class="message"></p>
   </aside>
 
@@ -74,7 +103,7 @@
   <dialog id="adminDialog" class="modal">
     <form method="dialog" class="modal-box">
       <h2>관리자 코드</h2>
-      <p>외계인 버튼을 너무 많이 눌렀습니다.</p>
+      <p>외계인 버튼을 여러 번 누르면 열리는 비밀 입구입니다.</p>
       <input id="adminCodeInput" type="password" placeholder="관리자 코드">
       <div class="modal-actions">
         <button class="pixel-button" value="cancel" type="submit">닫기</button>
@@ -88,7 +117,7 @@
     <div class="modal-box receipt-modal">
       <div class="party">🎉</div>
       <h2><mark>결제 완료!</mark></h2>
-      <p>보급품 구매가 성공적으로 처리되었습니다.</p>
+      <p>보급품 구매가 성공적으로 처리되었습니다. 아래 영수증을 확인해주세요.</p>
       <pre id="receiptText" class="receipt"></pre>
       <div class="modal-actions">
         <button id="copyReceipt" class="pixel-button" type="button">영수증 복사</button>
