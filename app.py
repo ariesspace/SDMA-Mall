@@ -133,7 +133,7 @@ def get_public_state() -> dict:
                 """
                 SELECT * FROM products
                 WHERE is_active = 1
-                ORDER BY id DESC
+                ORDER BY price ASC, id ASC
                 """
             )
         ]
