@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDMA Mall Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/neodgm/neodgm-webfont@1.530/neodgm/style.css">
+  <link rel="stylesheet" href="__BASE_PATH__/static/styles.css">
+</head>
+<body data-base-path="__BASE_PATH__" class="admin-body">
+  <header class="admin-header">
+    <a href="__BASE_PATH__/" class="pixel-button">몰로 돌아가기</a>
+    <h1>SDMA Mall 관리자</h1>
+    <input id="adminCode" type="password" placeholder="관리자 코드">
+  </header>
+
+  <main class="admin-layout">
+    <section class="admin-panel">
+      <h2>사용자별 점수 입력</h2>
+      <div class="form-grid">
+        <input id="userEmployeeNo" placeholder="사번">
+        <input id="userName" placeholder="이름">
+        <input id="userTeam" placeholder="팀/기수">
+        <input id="userPoints" type="number" placeholder="점수">
+      </div>
+      <button id="saveUser" class="pixel-button black" type="button">점수 저장</button>
+      <p id="userMessage" class="message"></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>사번</th><th>이름</th><th>팀</th><th>점수</th><th>수정</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="admin-panel">
+      <h2>상품 등록</h2>
+      <input id="productId" type="hidden">
+      <div class="form-grid">
+        <input id="productName" placeholder="상품명">
+        <input id="productPrice" type="number" placeholder="판매가 P">
+        <input id="productOriginalPrice" type="number" placeholder="원가 P">
+        <input id="productStock" type="number" placeholder="재고">
+      </div>
+      <input id="productImage" placeholder="이미지 URL">
+      <textarea id="productDescription" placeholder="상품 설명"></textarea>
+      <label class="check-row"><input id="productActive" type="checkbox" checked> 판매 중</label>
+      <button id="saveProduct" class="pixel-button black" type="button">상품 저장</button>
+      <p id="productMessage" class="message"></p>
+      <div id="adminProducts" class="admin-products"></div>
+    </section>
+
+    <section class="admin-panel wide">
+      <div class="panel-title">
+        <h2>결제 내역 영수증</h2>
+        <div>
+          <button id="copyAllReceipts" class="pixel-button" type="button">전체 복사</button>
+          <button id="resetOrders" class="pixel-button danger" type="button">구매 내역 초기화</button>
+        </div>
+      </div>
+      <pre id="receiptSummary" class="receipt large"></pre>
+      <div id="receiptCards" class="receipt-cards"></div>
+    </section>
+  </main>
+
+  <script src="__BASE_PATH__/static/admin.js"></script>
+</body>
+</html>

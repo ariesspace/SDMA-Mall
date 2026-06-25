@@ -1,0 +1,14 @@
+services:
+  sdma-mall:
+    build: .
+    container_name: sdma-mall
+    restart: "no"
+    environment:
+      SDMA_MALL_BASE_PATH: /mall
+      SDMA_MALL_ADMIN_CODE: ${SDMA_MALL_ADMIN_CODE:-change-me}
+      SDMA_MALL_DB: /data/sdma-mall.sqlite3
+      SDMA_MALL_PORT: 8090
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - ./data:/data
