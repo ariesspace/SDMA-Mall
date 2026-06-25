@@ -349,12 +349,30 @@ def build_receipts() -> dict:
         )
 
     receipt_list = list(people.values())
-    lines = []
-    for receipt in receipt_list:
+    if not receipt_list:
+        return {"list": [], "text": ""}
+
+    grand_total = sum(receipt["user"]["total_points"] for receipt in receipt_list)
+    lines = [
+        "[ 구매 내역 집계 ]",
+        now_text(),
+        "--------------------------------",
+    ]
+    for index, receipt in enumerate(receipt_list):
         user = receipt["user"]
-        label = f"{user['team']} {user['employee_no']} {user['name']}".strip()
-        summary = ", ".join(f"{item['product_name']} {item['quantity']}개" for item in receipt["items"])
-        lines.append(f"{label} - {summary} / 총 {user['total_points']:,}점")
+        label = f"{user['name']} ({user['employee_no']} / {user['team']})".strip()
+        if index:
+            lines.append("--------------------------------")
+        lines.append(label)
+        for item in receipt["items"]:
+            lines.append(f" {item['quantity']}x {item['product_name']}  {item['subtotal']:,}점")
+        lines.append(f" 소계                 {user['total_points']:,}점")
+    lines.extend(
+        [
+            "--------------------------------",
+            f"총 합계               {grand_total:,}점",
+        ]
+    )
     return {"list": receipt_list, "text": "\n".join(lines)}
 
 
