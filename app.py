@@ -297,27 +297,64 @@ def get_order(order_id: int) -> dict:
 
 def build_receipts() -> dict:
     with connect() as db:
-        orders = db.execute(
+        rows = db.execute(
             """
-            SELECT o.id, o.total_points, o.created_at, u.employee_no, u.name, u.team
+            SELECT
+                u.id AS user_id,
+                u.employee_no,
+                u.name,
+                u.team,
+                MIN(o.created_at) AS first_order_at,
+                MAX(o.created_at) AS last_order_at,
+                COUNT(DISTINCT o.id) AS order_count,
+                i.product_name,
+                i.unit_price,
+                SUM(i.quantity) AS quantity,
+                SUM(i.unit_price * i.quantity) AS subtotal
             FROM orders o
             JOIN users u ON u.id = o.user_id
-            ORDER BY o.id DESC
+            JOIN order_items i ON i.order_id = o.id
+            GROUP BY u.id, u.employee_no, u.name, u.team, i.product_name, i.unit_price
+            ORDER BY u.team, u.name, u.employee_no, i.product_name
             """
         ).fetchall()
-        items = db.execute("SELECT * FROM order_items ORDER BY order_id, id").fetchall()
-    item_map: dict[int, list[dict]] = {}
-    for item in items:
-        item_map.setdefault(item["order_id"], []).append(row_to_dict(item))
-    receipt_list = []
+
+    people: dict[int, dict] = {}
+    for row in rows:
+        receipt = people.setdefault(
+            row["user_id"],
+            {
+                "user": {
+                    "id": row["user_id"],
+                    "employee_no": row["employee_no"],
+                    "name": row["name"],
+                    "team": row["team"],
+                    "first_order_at": row["first_order_at"],
+                    "last_order_at": row["last_order_at"],
+                    "order_count": row["order_count"],
+                    "total_points": 0,
+                },
+                "items": [],
+            },
+        )
+        subtotal = int(row["subtotal"] or 0)
+        receipt["user"]["total_points"] += subtotal
+        receipt["items"].append(
+            {
+                "product_name": row["product_name"],
+                "unit_price": row["unit_price"],
+                "quantity": row["quantity"],
+                "subtotal": subtotal,
+            }
+        )
+
+    receipt_list = list(people.values())
     lines = []
-    for order in orders:
-        order_dict = row_to_dict(order)
-        order_items = item_map.get(order["id"], [])
-        label = f"{order['team']} {order['employee_no']} {order['name']}".strip()
-        summary = ", ".join(f"{item['product_name']} {item['quantity']}개" for item in order_items)
-        lines.append(f"[{order['created_at']}] {label} - {summary} / 총 {order['total_points']:,}점")
-        receipt_list.append({"order": order_dict, "items": order_items})
+    for receipt in receipt_list:
+        user = receipt["user"]
+        label = f"{user['team']} {user['employee_no']} {user['name']}".strip()
+        summary = ", ".join(f"{item['product_name']} {item['quantity']}개" for item in receipt["items"])
+        lines.append(f"{label} - {summary} / 총 {user['total_points']:,}점")
     return {"list": receipt_list, "text": "\n".join(lines)}
 
 

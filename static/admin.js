@@ -49,13 +49,14 @@ function render() {
 
   $("receiptSummary").textContent = state.receipts.text || "아직 구매 내역이 없습니다.";
   $("receiptCards").innerHTML = state.receipts.list.map((receipt) => {
-    const order = receipt.order;
-    const items = receipt.items.map((item) => `<li>${item.product_name} ${item.quantity}개 (${money(item.unit_price * item.quantity)})</li>`).join("");
+    const user = receipt.user;
+    const items = receipt.items.map((item) => `<li>${item.product_name} ${item.quantity}개 (${money(item.subtotal)})</li>`).join("");
     return `
       <div class="receipt-card">
-        <strong>${order.created_at} / ${order.employee_no} ${order.name || ""}</strong>
+        <strong>${user.team || ""} ${user.employee_no} ${user.name || ""}</strong>
+        <p>${user.order_count}회 결제 / ${user.first_order_at} ~ ${user.last_order_at}</p>
         <ul>${items}</ul>
-        <b>총 ${money(order.total_points)}</b>
+        <b>총 ${money(user.total_points)}</b>
       </div>
     `;
   }).join("");
