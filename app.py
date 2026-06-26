@@ -28,7 +28,7 @@ DEFAULT_PRODUCTS = [
     ("직속 1회 체험권 24시간", "직속 1회를 24시간 체험", 19, 20, None, "static/direct-experience-coupon.png"),
     ("커피 교환권", "커피로 교환할 수 있는 가벼운 보상권. 한정수량 2개", 9, 10, 2, "static/coffee.jpg"),
     ("타 인원 기수 변경권 24시간", "다른 인원의 기수를 24시간 변경", 28, 30, None, "static/generation-change-coupon.png"),
-    ("기수 체험권 24시간", "본인에게 적용되는 기수 체험권", 28, 30, None, ""),
+    ("기수 체험권 24시간", "본인에게 적용되는 기수 체험권", 28, 30, None, "static/self-generation-coupon.png"),
     ("치킨 교환권", "치킨으로 교환할 수 있는 맛있는 보상권. 한정수량 1개", 23, 25, 1, "static/chicken.jpg"),
     ("피자 교환권", "피자로 교환할 수 있는 든든한 보상권. 한정수량 1개", 33, 35, 1, "static/pizza.jpg"),
     ("무지개반사", "무지개반사 1회 사용권", 38, 40, None, "static/rainbow.png"),
