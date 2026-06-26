@@ -21,7 +21,7 @@ PORT = int(os.getenv("SDMA_MALL_PORT", os.getenv("RNP_MALL_PORT", "8090")))
 
 DEFAULT_PRODUCTS = [
     ("인사생략 1일", "하루 동안 인사를 생략할 수 있는 권리", 9, 10, None, "static/greeting-exemption-coupon.jpg"),
-    ("관등생략 1일", "하루 동안 관등성명을 생략할 수 있는 권리", 9, 10, None, ""),
+    ("관등생략 1일", "하루 동안 관등성명을 생략할 수 있는 권리", 9, 10, None, "static/rank-exemption-coupon.png"),
     ("반차", "하루에 한 번만 출석하여도 되는 반차권", 9, 10, None, ""),
     ("연차 1회", "원하는 날 사용할 수 있는 연차권 1회", 14, 15, None, ""),
     ("타 인원 임관 변경권 24시간", "다른 인원의 임관 상태를 24시간 변경", 14, 15, None, ""),
